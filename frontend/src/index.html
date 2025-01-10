@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Blockchain Tetris - Layout</title>
+    <link rel="icon" href="data:,">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #2a2a2a 0%, #3b3b3b 100%);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        #game-container {
+            position: relative;
+            display: flex;
+            background-color: #cce0ff;
+            border: 2px solid #3333ff;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        #left-panel {
+            width: 120px;
+            background-color: #b3daff;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+            position: relative;
+        }
+
+        #next-piece {
+            width: 80px;
+            height: 80px;
+            background-color: #d0ecff;
+            border: 2px solid #66a3ff;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #score-panel {
+            width: 80px;
+            background-color: #d0ecff;
+            border: 2px solid #66a3ff;
+            border-radius: 4px;
+            padding: 8px;
+            text-align: center;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .score-text {
+            font-family: "Courier New", monospace;
+            margin: 6px 0;
+            font-size: 16px;
+            color: #333;
+        }
+
+        #tetris-area {
+            width: 500px;
+            height: 800px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
+            position: relative;
+            margin: 0 auto;
+        }
+
+        #right-panel {
+            width: 200px;
+            margin: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            color: #fff;
+        }
+
+        button {
+            background-color: #666;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            margin: 8px 0;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 15px;
+            transition: background-color 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            background-color: #7a7a7a;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        #wallet-info {
+            background-color: #333;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        #wallet-address {
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        #rules-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+            position: absolute;
+            bottom: 10px;
+            width: calc(100% - 20px);
+        }
+
+        #rules-button:hover {
+            background-color: #0056b3;
+        }
+
+        #rules-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        #modal-content {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            width: 250px;
+            max-width: 350px;
+            text-align: center;
+            position: relative;
+            list-style: none;
+        }
+
+        #close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: red;
+        }
+
+        #close-modal:hover {
+            color: darkred;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="game-container">
+        <div id="left-panel">
+            <div id="next-piece"></div>
+            <div id="score-panel">
+                <div class="score-text" id="score-label">Score: 0</div>
+                <div class="score-text" id="lines-label">Lines: 0</div>
+                <div class="score-text" id="level-label">Level: 1</div>
+            </div>
+
+            <button id="rules-button">Rules</button>
+        </div>
+
+        <div id="tetris-area"></div>
+    </div>
+
+    <div id="right-panel">
+        <div id="wallet-info">
+            <div id="wallet-address">Wallet: Not Connected</div>
+            <button id="connect-wallet">Connect Wallet</button>
+        </div>
+        <button id="show-highscores">Show High Scores</button>
+        <button id="save-score">Save Score</button>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="rules-modal">
+        <div id="modal-content">
+            <button id="close-modal">&times;</button>
+            <h3>Game Rules</h3>
+            <div class="section">
+                <h3>Controls:</h3>
+                <ul>
+                    <li>Move Left: ←</li>
+                    <li>Move Right: →</li>
+                    <li>Rotate: ↑</li>
+                    <li>Soft Drop: ↓</li>
+                    <li>Hard Drop: Space </li>
+                    <li>Pause: P</li>
+                </ul>
+            </div>
+            <div class="section">
+                <h3>Points:</h3>
+                <ul>
+                    <li>1 line: 100</li>
+                    <li>2 lines: 300</li>
+                    <li>3 lines: 500</li>
+                    <li>4 lines: 800</li>
+                </ul>
+            </div>
+            <div class="section">
+                <h3>Level Up:</h3>
+                <ul>
+                    <li>Every 10 lines</li>
+                    <li>Speed increases</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const rulesButton = document.getElementById('rules-button');
+        const rulesModal = document.getElementById('rules-modal');
+        const closeModal = document.getElementById('close-modal');
+
+        rulesButton.addEventListener('click', () => {
+            rulesModal.style.display = 'flex';
+        });
+
+        closeModal.addEventListener('click', () => {
+            rulesModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === rulesModal) {
+                rulesModal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>

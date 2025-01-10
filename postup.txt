@@ -1,0 +1,83 @@
+﻿Dobre, poďme si rozvrhnúť štruktúru projektu pre jednoduchú blockchainovú hru Tetris s ukladaním výsledku na blockchain. Tento postup by mal byť dostatočne flexibilný na to, aby sa dal neskôr rozšíriť o ďalšie funkcie, ako sú NFT alebo turnaje.
+1. Plánovanie a návrh:
+* Herná mechanika: Detailne si rozmyslite herné mechaniky Tetrisu. Ako bude fungovať rotácia, pohyb, ukladanie riadkov, bodovanie? Použite existujúce implementácie Tetrisu ako referenciu.
+* Dátová štruktúra pre skóre: Rozhodnite sa, aké údaje sa budú ukladať na blockchain okrem samotného skóre. Napríklad:
+   * score (celkové skóre)
+   * lines (počet uložených riadkov)
+   * timestamp (čas uloženia skóre)
+   * playerAddress (adresa hráča)
+* Návrh smart kontraktu: Navrhnite rozhranie smart kontraktu. Bude obsahovať funkciu na uloženie skóre (napr. submitScore) a prípadne funkcie na získavanie skóre (napr. getScores).
+2. Vývoj smart kontraktu (Solidity):
+* Vytvorte smart kontrakt v Solidity.
+* Implementujte funkciu submitScore, ktorá prijme potrebné parametre (skóre, počet riadkov atď.) a uloží ich na blockchain.
+* Zvážte použitie štruktúr (structs) pre ukladanie dát o skóre pre lepšiu organizáciu.
+* Príklad zjednodušeného smart kontraktu:
+
+
+Solidity
+
+
+
+
+pragma solidity ^0.8.0;
+
+contract TetrisScores {
+   struct Score {
+       uint256 score;
+       uint256 lines;
+       uint256 timestamp;
+   }
+
+   mapping(address => Score[]) public playerScores;
+
+   function submitScore(uint256 _score, uint256 _lines) public {
+       playerScores[msg.sender].push(Score(_score, _lines, block.timestamp));
+   }
+
+   function getScores(address _player) public view returns (Score[] memory) {
+       return playerScores[_player];
+   }
+}
+
+* Dôkladne otestujte smart kontrakt pomocou testovacích nástrojov ako Hardhat alebo Truffle.
+3. Vývoj frontendovej časti (Phaser 3 + JavaScript):
+* Základná herná logika (Phaser 3): Implementujte hru Tetris v Phaseri 3. Zamerajte sa na funkčnú hrateľnosť bez zbytočných vizuálnych efektov na začiatok.
+* Integrácia s blockchainom (Web3.js/Ethers.js):
+   * Použite knižnicu Web3.js alebo Ethers.js na interakciu so smart kontraktom.
+   * Implementujte funkciu na odoslanie skóre do smart kontraktu po skončení hry.
+   * Použite MetaMask alebo inú peňaženku pre pripojenie používateľa k blockchainu.
+* Používateľské rozhranie: Vytvorte jednoduché používateľské rozhranie pre zobrazenie skóre a interakciu s blockchainom.
+4. Testovanie a nasadenie:
+* Dôkladné testovanie: Otestujte hru a smart kontrakt na testovacej sieti (napr. Goerli, Sepolia).
+* Nasadenie smart kontraktu: Nasadte otestovaný smart kontrakt na Base network.
+* Nasadenie frontendovej časti: Nasadte frontend hry na webový server.
+Štruktúra projektu (príklad):
+
+
+
+
+
+
+crypto-tetris/
+├── contracts/        # Smart kontrakty (Solidity)
+│   └── TetrisScores.sol
+├── client/           # Frontend (Phaser 3, JavaScript)
+│   ├── src/
+│   │   ├── scenes/     # Scény v Phaseri
+│   │   │   └── GameScene.js
+│   │   ├── utils/      # Pomocné funkcie (napr. interakcia s blockchainom)
+│   │   │   └── web3.js
+│   │   ├── index.html
+│   │   └── game.js
+│   └── package.json
+├── test/             # Testy smart kontraktov
+│   └── tetris-scores.test.js
+└── README.md
+
+Postup vývoja (odporúčaný):
+1. Smart kontrakt: Začnite vývojom a testovaním smart kontraktu.
+2. Základná hrateľnosť (Phaser 3): Implementujte základnú hrateľnosť Tetrisu bez integrácie s blockchainom.
+3. Integrácia s blockchainom: Implementujte odosielanie skóre do smart kontraktu.
+4. Testovanie a ladenie: Otestujte celú aplikáciu a opravte prípadné chyby.
+5. Vylepšenia a rozšírenia: Pridávajte ďalšie funkcie, ako NFT, turnaje atď.
+Tento postup by mal poskytnúť solídny základ pre vývoj vašej blockchainovej hry Tetris. Nezabúdajte na iteratívny prístup – začnite s jednoduchou verziou a postupne ju rozširujte. Veľa šťastia!
