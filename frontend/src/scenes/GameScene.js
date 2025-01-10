@@ -36,49 +36,51 @@ export default class GameScene extends Phaser.Scene {
         super({ key: 'GameScene' });
 
         this.scoringSystem = new ScoringSystem();
-
         this.grid = [];
         this.currentPiece = null;
         this.nextPiece = null;
         this.currentPiecePosition = { x: 0, y: 0 };
-
         this.gameOver = false;
         this.gameStarted = false;
         this.paused = false;
         this.canMove = true;
-        this.dropTimer = null; // Track the drop timer to avoid redundant resets
-        this.currentRotationIndex = 0; // Track rotation index for precomputed shapes
-        this.pauseText = null; // Text to display when the game is paused
+        this.dropTimer = null;
+        this.currentRotationIndex = 0;
+        this.pauseText = null;
+        this.gameOverText = null;
+        this.restartButton = null;
+        this.startButton = null;
+        this.gridStartX = 25;
+        this.gridStartY = 20;
     }
 
     create() {
+        // Clear previous graphics if they exist
+        if (this.graphics) {
+            this.graphics.clear();
+            this.graphics.destroy();
+        }
+
+        // Create background
         const bg = this.add.graphics();
         bg.fillGradientStyle(0xffffff, 0xffffff, 0x99ccff, 0x99ccff, 1);
         bg.fillRect(0, 0, this.cameras.main.width, this.cameras.main.height);
 
         this.resetGrid();
 
-        this.gridStartX = 25; 
-        this.gridStartY = 20;
+        // Create new graphics object
+        this.graphics = this.add.graphics({ lineStyle: { width: 0.25, color: 0x333333 } });
+        
+        // Draw initial grid
+        this.drawGrid();
 
-        if (!this.graphics) {
-            this.graphics = this.add.graphics({ lineStyle: { width: 0.25, color: 0x333333 } });
-        }
-
-        for (let x = 0; x <= GRID_WIDTH; x++) {
-            this.graphics.moveTo(this.gridStartX + x * BLOCK_SIZE, this.gridStartY);
-            this.graphics.lineTo(this.gridStartX + x * BLOCK_SIZE, this.gridStartY + GRID_HEIGHT * BLOCK_SIZE);
-        }
-        for (let y = 0; y <= GRID_HEIGHT; y++) {
-            this.graphics.moveTo(this.gridStartX, this.gridStartY + y * BLOCK_SIZE);
-            this.graphics.lineTo(this.gridStartX + GRID_WIDTH * BLOCK_SIZE, this.gridStartY + y * BLOCK_SIZE);
-        }
-        this.graphics.strokePath();
-
+        // Create start button
         const cx = this.cameras.main.width / 2;
         const cy = this.cameras.main.height / 2;
         this.startButton = this.add.text(cx, cy, 'Start Game', {
-            fontFamily: 'Arial', fontSize: '32px', color: '#fff',
+            fontFamily: 'Arial',
+            fontSize: '32px',
+            color: '#fff',
             backgroundColor: '#008000',
             padding: { x: 20, y: 10 },
             borderRadius: 5
@@ -95,9 +97,10 @@ export default class GameScene extends Phaser.Scene {
 
     createControls() {
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.input.keyboard.on('keyup-LEFT',  () => { this.canMove = true; });
+        
+        this.input.keyboard.on('keyup-LEFT', () => { this.canMove = true; });
         this.input.keyboard.on('keyup-RIGHT', () => { this.canMove = true; });
-        this.input.keyboard.on('keyup-DOWN',  () => { this.canMove = true; });
+        this.input.keyboard.on('keyup-DOWN', () => { this.canMove = true; });
 
         this.input.keyboard.on('keydown-UP', () => {
             if (!this.paused && this.gameStarted && !this.gameOver) {
@@ -127,6 +130,21 @@ export default class GameScene extends Phaser.Scene {
         });
     }
 
+    drawGrid() {
+        this.graphics.clear();
+        this.graphics.lineStyle(0.25, 0x333333);
+
+        for (let x = 0; x <= GRID_WIDTH; x++) {
+            this.graphics.moveTo(this.gridStartX + x * BLOCK_SIZE, this.gridStartY);
+            this.graphics.lineTo(this.gridStartX + x * BLOCK_SIZE, this.gridStartY + GRID_HEIGHT * BLOCK_SIZE);
+        }
+        for (let y = 0; y <= GRID_HEIGHT; y++) {
+            this.graphics.moveTo(this.gridStartX, this.gridStartY + y * BLOCK_SIZE);
+            this.graphics.lineTo(this.gridStartX + GRID_WIDTH * BLOCK_SIZE, this.gridStartY + y * BLOCK_SIZE);
+        }
+        this.graphics.strokePath();
+    }
+
     togglePause() {
         this.paused = !this.paused;
         if (this.dropTimer) {
@@ -145,7 +163,9 @@ export default class GameScene extends Phaser.Scene {
         const cy = this.cameras.main.height / 2;
         if (!this.pauseText) {
             this.pauseText = this.add.text(cx, cy, 'Pause', {
-                fontFamily: 'Arial', fontSize: '48px', color: '#ff0000',
+                fontFamily: 'Arial',
+                fontSize: '48px',
+                color: '#ff0000',
                 backgroundColor: '#000',
                 padding: { x: 20, y: 10 }
             }).setOrigin(0.5);
@@ -179,7 +199,10 @@ export default class GameScene extends Phaser.Scene {
                 loop: true
             });
         } else {
-            this.dropTimer.reset({ delay: this.scoringSystem.getCurrentSpeed(), loop: true });
+            this.dropTimer.reset({ 
+                delay: this.scoringSystem.getCurrentSpeed(),
+                loop: true 
+            });
         }
 
         this.spawnNewPiece();
@@ -191,11 +214,11 @@ export default class GameScene extends Phaser.Scene {
 
     generateRandomPiece() {
         const randKey = TETROMINO_KEYS[Math.floor(Math.random() * TETROMINO_KEYS.length)];
-        this.currentRotationIndex = 0; // Reset rotation index for new piece
+        this.currentRotationIndex = 0;
         return {
             shape: PRECOMPUTED_ROTATIONS[randKey][0],
             color: TETROMINOS[randKey].color,
-            type: randKey // Track the type for rotations
+            type: randKey
         };
     }
 
@@ -232,6 +255,7 @@ export default class GameScene extends Phaser.Scene {
 
     moveDown() {
         if (!this.gameStarted || this.gameOver || this.paused) return;
+        
         this.currentPiecePosition.y++;
         if (this.checkCollision()) {
             this.currentPiecePosition.y--;
@@ -304,34 +328,54 @@ export default class GameScene extends Phaser.Scene {
         }
     }
 
-        updateDropTimer() {
-            if (this.dropTimer) {
-                this.dropTimer.reset({
-                    delay: this.scoringSystem.getCurrentSpeed(),
-                    callback: this.moveDown,
-                    callbackScope: this,
-                    loop: true
-                });
-            }
+    updateDropTimer() {
+        if (this.dropTimer) {
+            this.dropTimer.reset({
+                delay: this.scoringSystem.getCurrentSpeed(),
+                callback: this.moveDown,
+                callbackScope: this,
+                loop: true
+            });
         }
+    }
 
     showGameOver() {
         this.gameOver = true;
         if (this.dropTimer) this.dropTimer.remove();
 
-        this.add.text(
+        // Clean up previous game over elements
+        if (this.gameOverText) this.gameOverText.destroy();
+        if (this.restartButton) this.restartButton.destroy();
+
+        this.gameOverText = this.add.text(
             this.cameras.main.width / 2,
             this.cameras.main.height / 2 - 50,
             'GAME OVER',
             { fontFamily: 'Arial', fontSize: '48px', color: '#ff0000' }
         ).setOrigin(0.5);
 
-        const restartButton = this.add.text(
+        this.restartButton = this.add.text(
             this.cameras.main.width / 2,
             this.cameras.main.height / 2 + 20,
             'Restart',
-            { fontFamily: 'Arial', fontSize: '32px', color: '#fff', backgroundColor: '#ff0000' }
-        ).setOrigin(0.5).setInteractive().on('pointerdown', () => {
+            { 
+                fontFamily: 'Arial',
+                fontSize: '32px',
+                color: '#fff',
+                backgroundColor: '#ff0000',
+                padding: { x: 20, y: 10 }
+            }
+        )
+        .setOrigin(0.5)
+        .setInteractive()
+        .on('pointerdown', () => {
+            // Clean up before restart
+            if (this.gameOverText) this.gameOverText.destroy();
+            if (this.restartButton) this.restartButton.destroy();
+            if (this.graphics) {
+                this.graphics.clear();
+                this.graphics.destroy();
+            }
             this.scene.restart();
         });
     }
@@ -339,8 +383,10 @@ export default class GameScene extends Phaser.Scene {
     updateScoreHTML() {
         const sc = document.getElementById('score-label');
         if (sc) sc.textContent = `Score: ${this.scoringSystem.score}`;
+        
         const ln = document.getElementById('lines-label');
         if (ln) ln.textContent = `Lines: ${this.scoringSystem.lines}`;
+        
         const lv = document.getElementById('level-label');
         if (lv) lv.textContent = `Level: ${this.scoringSystem.level}`;
     }
@@ -410,8 +456,9 @@ export default class GameScene extends Phaser.Scene {
 
     drawGame() {
         this.graphics.clear();
+        
+        // Draw grid lines
         this.graphics.lineStyle(0.25, 0x333333);
-
         for (let x = 0; x <= GRID_WIDTH; x++) {
             this.graphics.moveTo(this.gridStartX + x * BLOCK_SIZE, this.gridStartY);
             this.graphics.lineTo(this.gridStartX + x * BLOCK_SIZE, this.gridStartY + GRID_HEIGHT * BLOCK_SIZE);
@@ -422,6 +469,7 @@ export default class GameScene extends Phaser.Scene {
         }
         this.graphics.strokePath();
 
+        // Draw placed blocks
         for (let row = 0; row < GRID_HEIGHT; row++) {
             for (let col = 0; col < GRID_WIDTH; col++) {
                 if (this.grid[row][col]) {
@@ -436,6 +484,7 @@ export default class GameScene extends Phaser.Scene {
             }
         }
 
+        // Draw current piece
         if (this.currentPiece) {
             this.graphics.fillStyle(this.currentPiece.color);
             for (let r = 0; r < this.currentPiece.shape.length; r++) {
