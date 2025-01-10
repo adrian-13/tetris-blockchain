@@ -180,33 +180,42 @@ export default class GameScene extends Phaser.Scene {
         }
     }
 
-    startGame() {
-        this.gameStarted = true;
-        this.gameOver = false;
-        this.paused = false;
-        this.scoringSystem.reset();
-        this.resetGrid();
-        this.updateScoreHTML();
+startGame() {
+    this.gameStarted = true;
+    this.gameOver = false;
+    this.paused = false;
 
-        this.nextPiece = this.generateRandomPiece();
-        this.showNextPieceInHTML();
+    // Reset scoring and grid
+    this.scoringSystem.reset();
+    this.resetGrid();
+    this.updateScoreHTML();
 
-        if (!this.dropTimer) {
-            this.dropTimer = this.time.addEvent({
-                delay: this.scoringSystem.getCurrentSpeed(),
-                callback: this.moveDown,
-                callbackScope: this,
-                loop: true
-            });
-        } else {
-            this.dropTimer.reset({ 
-                delay: this.scoringSystem.getCurrentSpeed(),
-                loop: true 
-            });
-        }
-
-        this.spawnNewPiece();
+    // Clear existing graphics
+    if (this.graphics) {
+        this.graphics.clear();
     }
+    this.drawGrid();
+
+    // Initialize next piece
+    this.nextPiece = this.generateRandomPiece();
+    this.showNextPieceInHTML();
+
+    // Properly remove and reinitialize the drop timer
+    if (this.dropTimer) {
+        this.dropTimer.remove(); // Remove the existing timer
+    }
+    this.dropTimer = this.time.addEvent({
+        delay: this.scoringSystem.getCurrentSpeed(),
+        callback: this.moveDown,
+        callbackScope: this,
+        loop: true,
+    });
+
+    // Spawn the first piece
+    this.spawnNewPiece();
+    this.drawGame(); // Redraw everything
+}
+
 
     resetGrid() {
         this.grid = Array(GRID_HEIGHT).fill().map(() => Array(GRID_WIDTH).fill(0));
