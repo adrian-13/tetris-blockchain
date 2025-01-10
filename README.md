@@ -1,6 +1,6 @@
 # Blockchain Tetris
 
-### [Live Demo](https://vercel.com/adrians-projects-82e917e5/tetris-blockchain/2o2mhVJ9TvRWw5gKxQ2vTpGY1qYJ)
+### [Live Demo](https://tetris-blockchain.vercel.app/)
 
 Blockchain Tetris is a modern implementation of the classic Tetris game, designed with the goal of blockchain integration (Polygon). This game is built using:
 
