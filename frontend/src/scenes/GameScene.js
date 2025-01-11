@@ -218,7 +218,7 @@ startGame() {
 
 
     resetGrid() {
-        this.grid = Array(GRID_HEIGHT).fill().map(() => Array(GRID_WIDTH).fill(0));
+        this.grid = Array.from({ length: GRID_HEIGHT }, () => Array(GRID_WIDTH).fill(0));
     }
 
     generateRandomPiece() {
@@ -281,13 +281,12 @@ startGame() {
                     const newX = this.currentPiecePosition.x + x;
                     const newY = this.currentPiecePosition.y + y;
                     if (
-                        newX < 0 ||
-                        newX >= GRID_WIDTH ||
-                        newY >= GRID_HEIGHT ||
-                        (newY >= 0 && this.grid[newY][newX] !== 0)
+                        newX < 0 || newX >= GRID_WIDTH || newY >= GRID_HEIGHT ||
+                        (newY >= 0 && this.grid?.[newY]?.[newX] !== 0)
                     ) {
                         return true;
                     }
+
                 }
             }
         }
@@ -300,7 +299,15 @@ startGame() {
                 if (this.currentPiece.shape[y][x]) {
                     const gridY = this.currentPiecePosition.y + y;
                     if (gridY >= 0) {
-                        this.grid[gridY][this.currentPiecePosition.x + x] = this.currentPiece.color;
+                        if (
+                            gridY >= 0 &&
+                            gridY < GRID_HEIGHT &&
+                            this.currentPiecePosition.x + x >= 0 &&
+                            this.currentPiecePosition.x + x < GRID_WIDTH
+                        ) {
+                            this.grid[gridY][this.currentPiecePosition.x + x] = this.currentPiece.color;
+                        }
+
                     }
                 }
             }
@@ -404,7 +411,9 @@ startGame() {
         const nextEl = document.getElementById('next-piece');
         if (!nextEl) return;
 
-        nextEl.innerHTML = '';
+        while (nextEl.firstChild) {
+            nextEl.removeChild(nextEl.firstChild); // Bezpečné čistenie DOM
+        }
 
         if (!this.nextPiece) return;
 
@@ -419,24 +428,28 @@ startGame() {
         const shapeWidthPx = shapeWidthInBlocks * miniSize;
         const shapeHeightPx = shapeHeightInBlocks * miniSize;
 
-        const offsetX = (80 - shapeWidthPx) / 2;
-        const offsetY = (80 - shapeHeightPx) / 2;
+        // Vypočítanie `offsetX` a `offsetY`
+        const offsetX = (80 - shapeWidthPx) / 2; // 80 je šírka kontajnera
+        const offsetY = (80 - shapeHeightPx) / 2; // 80 je výška kontajnera
 
         for (let row = 0; row < shapeHeightInBlocks; row++) {
             for (let col = 0; col < shapeWidthInBlocks; col++) {
                 if (shape[row][col]) {
                     const block = document.createElement('div');
-                    block.style.position = 'absolute';
-                    block.style.width = miniSize + 'px';
-                    block.style.height = miniSize + 'px';
-                    block.style.backgroundColor = colorCSS;
-                    block.style.left = (offsetX + col * miniSize) + 'px';
-                    block.style.top = (offsetY + row * miniSize) + 'px';
+                    block.style.cssText = `
+                        position: absolute;
+                        width: ${miniSize}px;
+                        height: ${miniSize}px;
+                        background-color: ${colorCSS};
+                        left: ${offsetX + col * miniSize}px;
+                        top: ${offsetY + row * miniSize}px;
+                    `;
                     nextEl.appendChild(block);
                 }
             }
         }
     }
+
 
     update() {
         if (!this.gameStarted || this.gameOver || this.paused) return;

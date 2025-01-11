@@ -1,61 +1,73 @@
 // ScoringSystem.js
 export class ScoringSystem {
   constructor() {
-    // Základné skóre
-    this.baseScores = {
-      singleLine: 100,    // 1 riadok
-      doubleLine: 300,    // 2 riadky naraz
-      tripleLine: 500,    // 3 riadky naraz
-      tetris: 800,        // 4 riadky naraz
-      softDrop: 1,        // Bodovanie za mäkký pád (šípka dole) - za každý blok
-      hardDrop: 2,        // Bodovanie za tvrdý pád (medzerník) - za každý blok
-      tSpin: 400,         // T-spin bez riadkov
-      tSpinSingle: 800,   // T-spin s jedným riadkom
-      tSpinDouble: 1200,  // T-spin s dvoma riadkami
-      tSpinTriple: 1600,  // T-spin s troma riadkami
-      perfectClear: 2000, // Vyčistenie celej obrazovky
-      combo: 50,          // Bonus za combo (násobí sa počtom combo)
-    };
+    // Immutable configuration objects
+    Object.defineProperty(this, 'baseScores', {
+      value: Object.freeze({
+        singleLine: 100,    // 1 line
+        doubleLine: 300,    // 2 lines at once
+        tripleLine: 500,    // 3 lines at once
+        tetris: 800,        // 4 lines at once
+        softDrop: 1,        // Soft drop (arrow down) - per block
+        hardDrop: 2,        // Hard drop (space) - per block
+        tSpin: 400,         // T-spin without clearing lines
+        tSpinSingle: 800,   // T-spin with 1 line
+        tSpinDouble: 1200,  // T-spin with 2 lines
+        tSpinTriple: 1600,  // T-spin with 3 lines
+        perfectClear: 2000, // Clearing the board
+        combo: 50           // Combo bonus (multiplied by combo count)
+      }),
+      writable: false,
+    });
 
-    // Rýchlosti padania pre každý level (v ms)
-    this.speeds = {
-      1: 1000,
-      2: 900,
-      3: 800,
-      4: 700,
-      5: 600,
-      6: 500,
-      7: 400,
-      8: 300,
-      9: 200,
-      10: 100,
-      // Od levelu 11 až 15 sa rýchlosť znižuje o 10ms
-      15: 50,
-      // Maximum speed od levelu 16
-      16: 30
-    };
+    Object.defineProperty(this, 'speeds', {
+      value: Object.freeze({
+        1: 1000,
+        2: 925,
+        3: 850,
+        4: 775,
+        5: 700,
+        6: 625,
+        7: 550,
+        8: 475,
+        9: 400,
+        10: 350,
+        11: 300,
+        12: 250,
+        13: 200,
+        14: 175,
+        15: 150,
+        16: 125,
+        17: 100,
+        18: 75,
+        19: 60,
+        20: 50
+      }),
+      writable: false,
+    });
 
-    // Počet riadkov potrebných na každý level
-    this.levelThresholds = {
-      1: 0,
-      2: 10,
-      3: 20,
-      4: 30,
-      5: 40,
-      6: 50,
-      7: 60,
-      8: 70,
-      9: 80,
-      10: 100,
-      11: 120,
-      12: 140,
-      13: 160,
-      14: 180,
-      15: 200,
-      // Od levelu 16 každých 30 riadkov
-    };
+    Object.defineProperty(this, 'levelThresholds', {
+      value: Object.freeze({
+        1: 0,
+        2: 10,
+        3: 20,
+        4: 30,
+        5: 40,
+        6: 50,
+        7: 60,
+        8: 70,
+        9: 80,
+        10: 100,
+        11: 120,
+        12: 140,
+        13: 160,
+        14: 180,
+        15: 200
+      }),
+      writable: false,
+    });
 
-    // Aktuálny stav
+    // Initialize current state
     this.reset();
   }
 
@@ -70,25 +82,29 @@ export class ScoringSystem {
   }
 
   getCurrentSpeed() {
-    if (this.level >= 16) return this.speeds[16];
-    if (this.level >= 15) return this.speeds[15];
     return this.speeds[this.level] || 1000;
   }
 
-  // Výpočet skóre za vymazanie riadkov
   calculateLinesClearedScore(lineCount, isTSpin = false, isPerfectClear = false) {
+    if (typeof lineCount !== 'number' || lineCount < 0 || lineCount > 4) {
+      throw new Error('Invalid line count. Must be a number between 0 and 4.');
+    }
+    if (typeof isTSpin !== 'boolean' || typeof isPerfectClear !== 'boolean') {
+      throw new Error('Invalid flags. `isTSpin` and `isPerfectClear` must be boolean.');
+    }
+
     let score = 0;
-    
-    // Základné skóre za riadky
+
+    // Base scores for cleared lines
     if (isTSpin) {
-      switch(lineCount) {
+      switch (lineCount) {
         case 1: score = this.baseScores.tSpinSingle; break;
         case 2: score = this.baseScores.tSpinDouble; break;
         case 3: score = this.baseScores.tSpinTriple; break;
         default: score = this.baseScores.tSpin;
       }
     } else {
-      switch(lineCount) {
+      switch (lineCount) {
         case 1: score = this.baseScores.singleLine; break;
         case 2: score = this.baseScores.doubleLine; break;
         case 3: score = this.baseScores.tripleLine; break;
@@ -96,11 +112,11 @@ export class ScoringSystem {
       }
     }
 
-    // Násobenie levelom
+    // Multiply by level
     score *= this.level;
 
-    // Back-to-back bonus (30% navyše)
-    if ((lineCount === 4 || isTSpin) && 
+    // Back-to-back bonus (30% extra)
+    if ((lineCount === 4 || isTSpin) &&
         (this.backToBackTetris || this.backToBackTSpin)) {
       score = Math.floor(score * 1.3);
     }
@@ -121,9 +137,7 @@ export class ScoringSystem {
     return score;
   }
 
-  // Aktualizácia levelu na základe počtu riadkov
   updateLevel() {
-    // Nájdeme najvyšší threshold, ktorý sme prekročili
     let newLevel = 1;
     for (const [level, threshold] of Object.entries(this.levelThresholds)) {
       if (this.lines >= threshold) {
@@ -131,12 +145,11 @@ export class ScoringSystem {
       }
     }
 
-    // Pre levely nad 15 používame vzorec
+    // Beyond predefined levels
     if (this.lines >= this.levelThresholds[15]) {
       newLevel = Math.floor((this.lines - this.levelThresholds[15]) / 30) + 15;
     }
 
-    // Aktualizujeme level ak sa zmenil
     if (newLevel !== this.level) {
       this.level = newLevel;
       return true;
@@ -144,22 +157,25 @@ export class ScoringSystem {
     return false;
   }
 
-  // Pridanie skóre za soft drop (manuálne urýchlenie pádu)
   addSoftDropScore(cellCount) {
+    if (typeof cellCount !== 'number' || cellCount < 0) {
+      throw new Error('Invalid cell count for soft drop.');
+    }
     const points = this.baseScores.softDrop * cellCount;
     this.score += points;
     return points;
   }
 
-  // Pridanie skóre za hard drop (okamžitý pád)
   addHardDropScore(cellCount) {
+    if (typeof cellCount !== 'number' || cellCount < 0) {
+      throw new Error('Invalid cell count for hard drop.');
+    }
     const points = this.baseScores.hardDrop * cellCount;
     this.score += points;
     return points;
   }
 
-  // Hlavná metóda pre aktualizáciu skóre
-  updateScore(lineCount, moveInfo) {
+  updateScore(lineCount, moveInfo = {}) {
     const {
       isTSpin = false,
       isPerfectClear = false,
@@ -167,25 +183,19 @@ export class ScoringSystem {
       hardDropCells = 0
     } = moveInfo;
 
-    // Pripočítame body za drop
     if (softDropCells > 0) this.addSoftDropScore(softDropCells);
     if (hardDropCells > 0) this.addHardDropScore(hardDropCells);
 
-    // Aktualizujeme back-to-back stav
     if (lineCount === 4 || isTSpin) {
       this.backToBackTetris = true;
     } else if (lineCount > 0) {
       this.backToBackTetris = false;
     }
 
-    // Vypočítame a pridáme body za riadky
     const lineScore = this.calculateLinesClearedScore(lineCount, isTSpin, isPerfectClear);
     this.score += lineScore;
-
-    // Aktualizujeme počet riadkov
     this.lines += lineCount;
 
-    // Skontrolujeme či sa zvýšil level
     const levelChanged = this.updateLevel();
 
     return {
