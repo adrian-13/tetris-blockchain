@@ -80,6 +80,11 @@ class Game {
                         return;
                     }
 
+                    if (playerName.length > 20) {
+                        alert('Player name must be at most 20 characters!');
+                        return;
+                      }
+
                     // Anti-spam: 1 minúta medzi submitmi
                     if (Date.now() - this.lastScoreSubmission < 60000) {
                         alert('You can only submit a score once per minute!');
