@@ -1,6 +1,43 @@
 export const contractAddress = "0xC9A3DCbA132bA3c3b2cBB45b08b9d22Db7F95F3e";
 export const contractABI = [
     {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "player",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "score",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "lines",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "playerName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "ScoreSubmitted",
+      "type": "event"
+    },
+    {
       "inputs": [],
       "name": "getAllScores",
       "outputs": [
