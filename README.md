@@ -7,12 +7,19 @@ Blockchain Tetris is a modern implementation of the classic Tetris game, designe
 - **Phaser.js**: For implementing game logic and visuals.
 - **HTML/CSS**: For design and layout.
 - **JavaScript**: For handling game rules and interactions.
+- **Ethers.js**: For blockchain interaction (sending and reading data from the contract).
+- **Solidity**: For the smart contract (storing top 10 scores on-chain).
 
 ## Features
 
-- **Game Rules**: Supports classic Tetris rules, including rotation, fast drop, and a scoring system.
-- **Responsive Layout**: The game is optimized for desktop browsers.
-- **Game Pause**: Players can pause the game anytime by pressing the `P` key.
+- **Classic Tetris Mechanics**: Supports rotation, fast drop, scoring, and line clears.
+- **Responsive Layout**: Optimized for desktop browsers.
+- **Game Pause**: Press the `P` key to pause the game anytime.
+- **Top 10 On-chain Leaderboard**:  
+  - Scores are sent to a Solidity smart contract on Polygon zkEVM Cardona Testnet.  
+  - Stores only the top 10 highest scores (with player name and lines cleared).  
+  - Displays the top 10 scoreboard on the frontend via a simple table.  
+  - Metamask integration for submitting and reading scores from the blockchain.
 
 ## Important Note
 
@@ -20,10 +27,10 @@ Blockchain Tetris is a modern implementation of the classic Tetris game, designe
 
 ## TO-DO
 
-- **Blockchain Integration**: Plans include leveraging the Polygon blockchain for:
-  - Storing scores on the blockchain.
-  - Organizing competitions and tournaments.
-  - Rewarding players with NFTs and cryptocurrency.
+- **NFT/Crypto Rewards**: Implement a mechanism for rewarding high-scoring players.
+- **Competitions and Tournaments**: Add features to organize events and leaderboards with prizes.
+- **Further UI/UX Improvements**: Fine-tune visuals and responsiveness, especially for mobile.
+  
 
 ## Instructions for Running
 
