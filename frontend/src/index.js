@@ -61,6 +61,7 @@ class Game {
     setupScoreUI() {
         const saveScoreBtn = document.getElementById('save-score');
         const showScoresBtn = document.getElementById('show-highscores');
+        
 
         if (saveScoreBtn) {
             saveScoreBtn.addEventListener('click', async () => {
@@ -69,16 +70,16 @@ class Game {
                     return;
                 }
 
-                if (!scene.gameOver) {
-                    alert('You can only submit your score after the game is over!');
-                    return;
-                  }
-
                 try {
                     const scene = this.game.scene.keys['GameScene'];
                     const currentScore = scene.score;
                     const currentLines = scene.lines;
                     const playerName = prompt('Enter player name:', 'Anonymous');
+
+                    if (!scene.gameOver) {
+                      alert('You can only submit your score after the game is over!');
+                      return;
+                    }
 
                     if (!playerName || playerName.trim() === '') {
                         alert('Player name cannot be empty!');
@@ -191,9 +192,15 @@ class Game {
         alert('Disconnected from wallet.');
     }
 
+
+
     async submitScore(score, lines, playerName) {
         if (!this.isConnected || !this.contract) {
             throw new Error('Wallet not connected or contract unavailable');
+        }
+
+        if (score == null || lines == null) {
+          throw new Error('You have no score to submit!');
         }
 
         try {
