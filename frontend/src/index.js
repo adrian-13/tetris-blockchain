@@ -69,6 +69,11 @@ class Game {
                     return;
                 }
 
+                if (!scene.gameOver) {
+                    alert('You can only submit your score after the game is over!');
+                    return;
+                  }
+
                 try {
                     const scene = this.game.scene.keys['GameScene'];
                     const currentScore = scene.score;
