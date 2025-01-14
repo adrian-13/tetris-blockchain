@@ -1,81 +1,5 @@
-export const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+export const contractAddress = "0x9809d9D94b0B3380db38b1e1a06047a2964e0041";
 export const contractABI = [
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "player",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "score",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "lines",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "timestamp",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "playerName",
-          "type": "string"
-        }
-      ],
-      "name": "ScoreSubmitted",
-      "type": "event"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "allScores",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "score",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "lines",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "timestamp",
-          "type": "uint256"
-        },
-        {
-          "internalType": "address",
-          "name": "player",
-          "type": "address"
-        },
-        {
-          "internalType": "string",
-          "name": "playerName",
-          "type": "string"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
     {
       "inputs": [],
       "name": "getAllScores",
@@ -83,51 +7,10 @@ export const contractABI = [
         {
           "components": [
             {
-              "internalType": "uint256",
-              "name": "score",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "lines",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "timestamp",
-              "type": "uint256"
-            },
-            {
               "internalType": "address",
               "name": "player",
               "type": "address"
             },
-            {
-              "internalType": "string",
-              "name": "playerName",
-              "type": "string"
-            }
-          ],
-          "internalType": "struct TetrisScore.Score[]",
-          "name": "",
-          "type": "tuple[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_player",
-          "type": "address"
-        }
-      ],
-      "name": "getPlayerScores",
-      "outputs": [
-        {
-          "components": [
             {
               "internalType": "uint256",
               "name": "score",
@@ -139,68 +22,19 @@ export const contractABI = [
               "type": "uint256"
             },
             {
-              "internalType": "uint256",
-              "name": "timestamp",
-              "type": "uint256"
-            },
-            {
-              "internalType": "address",
-              "name": "player",
-              "type": "address"
-            },
-            {
               "internalType": "string",
               "name": "playerName",
               "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
             }
           ],
-          "internalType": "struct TetrisScore.Score[]",
+          "internalType": "struct TetrisScore.ScoreEntry[]",
           "name": "",
           "type": "tuple[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "playerScores",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "score",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "lines",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "timestamp",
-          "type": "uint256"
-        },
-        {
-          "internalType": "address",
-          "name": "player",
-          "type": "address"
-        },
-        {
-          "internalType": "string",
-          "name": "playerName",
-          "type": "string"
         }
       ],
       "stateMutability": "view",
@@ -227,6 +61,45 @@ export const contractABI = [
       "name": "submitScore",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "topScores",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "player",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "score",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lines",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "playerName",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     }
   ];

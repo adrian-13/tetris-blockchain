@@ -1,11 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="utf-8">
-    <title>Blockchain Tetris - Layout</title>
-    <link rel="icon" href="data:,">
-
+    <title>Blockchain Tetris</title>
     <style>
         body {
             margin: 0;
@@ -17,7 +15,6 @@
             justify-content: center;
             align-items: center;
         }
-
 
         #game-container {
             position: relative;
@@ -86,19 +83,33 @@
             margin: 0 auto;
         }
 
+        /* ------ RIGHT PANEL ------ */
         #right-panel {
-            width: 200px;
+            position: relative;
+            width: 300px;
             margin: 20px;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            color: #fff;
+
+            /* Tmavé pozadie, jemný border a trochu zaoblené rohy */
+            background: #1e1e1e;
+            border: 2px solid #444;
+            border-radius: 8px;
+
+            /* Padding okolo obsahu */
+            padding: 20px;
+
+            /* Bledší tieň, aby nevyzeral príliš mohutne */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.35);
+            overflow: hidden; /* ak by niečo prečnievalo, skryje sa */
         }
 
+        /* ------ BUTTONS ------ */
         button {
-            background-color: #666;
+            background-color: #444;
             color: #fff;
-            border: none;
+            border: 1px solid #666;
             padding: 10px 16px;
             margin: 8px 0;
             cursor: pointer;
@@ -108,24 +119,34 @@
         }
 
         button:hover {
-            background-color: #7a7a7a;
+            background-color: #555;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
+
+        /* ------ WALLET INFO ------ */
         #wallet-info {
-            background-color: #333;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 20px;
             width: 100%;
-            box-sizing: border-box;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+
+            border-radius: 6px;
+
+            /* Trochu väčší padding pre vzdušnejší vzhľad */
+            margin-bottom: 20px;
+
+            /* Tu môžeme tieň úplne vypnúť, aby nevyzeral ako ďalší panel */
+            box-shadow: none;
+
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
 
         #wallet-address {
-            margin-bottom: 8px;
             font-weight: bold;
+            color: #cfcfcf;
+            margin-bottom: 8px;
         }
+
 
         #rules-button {
             background-color: #007bff;
@@ -187,6 +208,32 @@
             padding: 0;
             margin: 0;
         }
+
+        /* ------ TABLE (HIGH SCORES) ------ */
+        #scores-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        #scores-table thead {
+            background-color: #444;
+            color: #fff;
+        }
+
+        #scores-table th,
+        #scores-table td {
+            border: 1px solid #777;
+            padding: 8px;
+            text-align: center;
+            background: #2d2d2d;
+            color: #ddd;
+        }
+
+        #scores-table th {
+            font-weight: 600;
+        }
     </style>
 </head>
 
@@ -199,7 +246,6 @@
                 <div class="score-text" id="lines-label">Lines: 0</div>
                 <div class="score-text" id="level-label">Level: 1</div>
             </div>
-
             <button id="rules-button">Rules</button>
         </div>
 
@@ -211,11 +257,27 @@
             <div id="wallet-address">Wallet: Not Connected</div>
             <button id="connect-wallet">Connect Wallet</button>
         </div>
-        <button id="show-highscores">Show High Scores</button>
+
         <button id="save-score">Save Score</button>
+        <button id="show-highscores">Show TOP 10 Scores</button>
+
+        <!-- Tabuľka s high scores -->
+        <table id="scores-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Score</th>
+                    <th>Lines</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamicky dopĺňa náš JS -->
+            </tbody>
+        </table>
     </div>
 
-    <!-- Modal Structure -->
+    <!-- Modal na pravidlá hry -->
     <div id="rules-modal">
         <div id="modal-content">
             <button id="close-modal">&times;</button>
@@ -227,7 +289,7 @@
                     <li>Move Right: →</li>
                     <li>Rotate: ↑</li>
                     <li>Soft Drop: ↓</li>
-                    <li>Hard Drop: Space </li>
+                    <li>Hard Drop: Space</li>
                     <li>Pause: P</li>
                 </ul>
             </div>
@@ -250,6 +312,7 @@
         </div>
     </div>
 
+    <!-- Skript na obsluhu modalu (pravidlá) -->
     <script>
         const rulesButton = document.getElementById('rules-button');
         const rulesModal = document.getElementById('rules-modal');
@@ -269,6 +332,9 @@
             }
         });
     </script>
+
+    <!-- Skript s celou logikou hry a blockchain napojením -->
+    <script type="module" src="./index.js"></script>
 </body>
 
 </html>

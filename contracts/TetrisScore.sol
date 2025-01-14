@@ -1,78 +1,72 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.17;
 
 contract TetrisScore {
-    struct Score {
+    struct ScoreEntry {
+        address player;
         uint256 score;
         uint256 lines;
-        uint256 timestamp;
-        address player;
         string playerName;
+        uint256 timestamp;
     }
 
-    // Pole pre všetky skóre (globálne)
-    Score[] public allScores;
-
-    // Mapping od adresy hráča k zoznamu jeho skóre
-    mapping(address => Score[]) public playerScores;
-
-    // Udalosť emitovaná pri uložení nového skóre
-    event ScoreSubmitted(
-        address indexed player,
-        uint256 score,
-        uint256 lines,
-        uint256 timestamp,
-        string playerName
-    );
+    // Pole, kde budeme držať top 10 skóre
+    ScoreEntry[] public topScores;
 
     /**
-     * Uloží skóre pre volajúcu adresu (msg.sender).
-     * @param _score       Počet bodov (uint256)
-     * @param _lines       Počet zmazaných riadkov (uint256)
-     * @param _playerName  Meno hráča (string)
+     * @dev Funkcia na pridanie/aktualizovanie skóre v top 10.
+     * @param _score Skóre hráča.
+     * @param _lines Počet riadkov, ktoré hráč odstránil (voliteľné, môžeš to ľubovoľne využiť).
+     * @param _playerName Meno (nick) hráča.
      */
     function submitScore(
         uint256 _score,
         uint256 _lines,
         string memory _playerName
     ) public {
-        Score memory newScore = Score({
+        // Vytvoríme novú štruktúru skóre
+        ScoreEntry memory newEntry = ScoreEntry({
+            player: msg.sender,
             score: _score,
             lines: _lines,
-            timestamp: block.timestamp,
-            player: msg.sender,
-            playerName: _playerName
+            playerName: _playerName,
+            timestamp: block.timestamp
         });
 
-        // Uložíme do "globálneho" poľa všetkých skóre
-        allScores.push(newScore);
-
-        // Uložíme do zoznamu pre danú adresu
-        playerScores[msg.sender].push(newScore);
-
-        // Emitneme udalosť
-        emit ScoreSubmitted(
-            msg.sender,
-            _score,
-            _lines,
-            block.timestamp,
-            _playerName
-        );
+        // Ak máme menej ako 10 záznamov, priamo pridáme a zoraďíme
+        if (topScores.length < 10) {
+            topScores.push(newEntry);
+            _sortDescending();
+        } else {
+            // Ak je nové skóre väčšie než posledné (najmenšie) v poli, nahradíme ho a zoraďíme
+            if (_score > topScores[topScores.length - 1].score) {
+                topScores[topScores.length - 1] = newEntry;
+                _sortDescending();
+            }
+        }
     }
 
     /**
-     * Vráti všetky skóre konkrétneho hráča.
+     * @dev Vráti celé pole topScores (max. 10 záznamov).
      */
-    function getPlayerScores(
-        address _player
-    ) public view returns (Score[] memory) {
-        return playerScores[_player];
+    function getAllScores() public view returns (ScoreEntry[] memory) {
+        return topScores;
     }
 
     /**
-     * Vráti všetky skóre, ktoré boli doteraz uložené (aj rôznymi hráčmi).
+     * @dev Interná funkcia na zoraďovanie pomocou jednoduchého bubble sortu.
+     *  Pre 10 položiek to úplne stačí.
      */
-    function getAllScores() public view returns (Score[] memory) {
-        return allScores;
+    function _sortDescending() internal {
+        uint256 length = topScores.length;
+        for (uint256 i = 0; i < length; i++) {
+            for (uint256 j = 0; j < length - 1; j++) {
+                if (topScores[j].score < topScores[j + 1].score) {
+                    ScoreEntry memory temp = topScores[j];
+                    topScores[j] = topScores[j + 1];
+                    topScores[j + 1] = temp;
+                }
+            }
+        }
     }
 }
